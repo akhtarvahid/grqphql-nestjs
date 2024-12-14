@@ -8,10 +8,11 @@ import { User } from './decorators/user.decorator';
 import { AuthGuard } from './guards/auth.guard';
 import { UserEntity } from './user.entity';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 
-@ApiBearerAuth('JWT-auth')
+
 @Controller()
+@ApiTags('User')
 export class UserController {
     constructor(private readonly userService: UserService){}
     @Post('users')
@@ -22,6 +23,7 @@ export class UserController {
     }
 
     @Put('user')
+    @ApiBearerAuth('JWT-auth')
     @UseGuards(AuthGuard)
     async updateUser(@User('id') userId: number, @Body('user') updateUserDto: UpdateUserDto): Promise<UserResponseInterface>{
       const user = await this.userService.updateUser(userId, updateUserDto);
@@ -29,6 +31,7 @@ export class UserController {
     }
 
     @Post('users/login')
+    @ApiBearerAuth('JWT-auth')
     @ApiBody({ type: LoginUserDto })
     @UsePipes(new ValidationPipe())
     async loginUser(@Body('user') loginUserDto: UserCredentialsDto): Promise<UserResponseInterface> {
